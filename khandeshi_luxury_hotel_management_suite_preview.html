@@ -1,0 +1,1259 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Khandeshi Luxury Hotel Management System</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#fdf8f6',
+                            100: '#fbe8e3',
+                            500: '#d97706',
+                            600: '#b45309',
+                            700: '#92400e',
+                            800: '#78350f',
+                            900: '#451a03',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Custom Scrollbars */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+
+        /* Fade In Animation for Section Switch */
+        .fade-in {
+            animation: fadeIn 0.3s ease-in-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from { 
+                opacity: 0; 
+                transform: translateY(6px); 
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0); 
+            }
+        }
+
+        /* Light mode overrides when toggled */
+        html:not(.dark) body {
+            background-color: #f8fafc !important;
+            color: #1e293b !important;
+        }
+        html:not(.dark) #sidebar {
+            background-color: #ffffff !important;
+            border-color: #e2e8f0 !important;
+        }
+        html:not(.dark) header {
+            background-color: #ffffff !important;
+            border-color: #e2e8f0 !important;
+        }
+        html:not(.dark) .bg-slate-900 {
+            background-color: #ffffff !important;
+            border-color: #e2e8f0 !important;
+            color: #0f172a !important;
+        }
+        html:not(.dark) .bg-slate-950 {
+            background-color: #f1f5f9 !important;
+            border-color: #cbd5e1 !important;
+            color: #0f172a !important;
+        }
+        html:not(.dark) .text-white {
+            color: #0f172a !important;
+        }
+        html:not(.dark) .text-slate-400, 
+        html:not(.dark) .text-slate-500 {
+            color: #64748b !important;
+        }
+        html:not(.dark) input, 
+        html:not(.dark) select {
+            background-color: #f8fafc !important;
+            color: #0f172a !important;
+            border-color: #cbd5e1 !important;
+        }
+    </style>
+</head>
+<body class="h-full bg-slate-950 text-slate-100 transition-colors duration-200">
+
+    <div id="modalOverlay" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-slate-900 rounded-2xl p-6 max-w-md w-full shadow-2xl border border-slate-800 transform transition-all scale-95 opacity-0" id="modalContainer">
+            <div class="flex items-center space-x-3 mb-4">
+                <div id="modalIconWrap" class="w-10 h-10 rounded-full flex items-center justify-center bg-amber-500/20 text-amber-500">
+                    <i id="modalIcon" class="fa-solid fa-circle-check text-xl"></i>
+                </div>
+                <h3 id="modalTitle" class="text-lg font-bold text-white">Notification</h3>
+            </div>
+            <p id="modalMessage" class="text-sm text-slate-300 mb-6 leading-relaxed">Message content goes here.</p>
+            <div class="flex justify-end space-x-3">
+                <button onclick="closeModal()" class="px-5 py-2.5 bg-amber-600 hover:bg-amber-500 text-white font-medium text-sm rounded-xl transition shadow-lg shadow-amber-600/20">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Login Page -->
+    <div id="loginPage" class="min-h-full flex items-center justify-center p-4">
+        <div class="max-w-md w-full bg-slate-900 rounded-3xl shadow-2xl border border-slate-800 p-8 sm:p-10 fade-in">
+            <div class="text-center mb-8">
+                <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-tr from-amber-600 to-amber-400 text-slate-950 shadow-xl shadow-amber-600/20 mb-4">
+                    <i class="fa-solid fa-crown text-2xl"></i>
+                </div>
+                <h1 class="text-2xl font-bold text-white">Khandeshi Luxury</h1>
+                <p class="text-xs tracking-widest uppercase font-semibold text-amber-500 mt-1">Hotel Management System</p>
+            </div>
+
+            <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-5">
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Username</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-4 flex items-center text-slate-500">
+                            <i class="fa-solid fa-user"></i>
+                        </span>
+                        <input type="text" id="loginUsername" required placeholder="admin" 
+                            class="w-full pl-11 pr-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 text-white transition">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Password</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-4 flex items-center text-slate-500">
+                            <i class="fa-solid fa-lock"></i>
+                        </span>
+                        <input type="password" id="loginPassword" required placeholder="1234" 
+                            class="w-full pl-11 pr-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 text-white transition">
+                    </div>
+                </div>
+
+                <div id="loginError" class="text-rose-500 text-xs font-medium hidden"></div>
+
+                <button type="submit" class="w-full py-3.5 bg-amber-600 hover:bg-amber-500 active:bg-amber-700 text-slate-950 font-bold rounded-xl shadow-lg shadow-amber-600/20 transition flex items-center justify-center space-x-2">
+                    <span>Login to Dashboard</span>
+                    <i class="fa-solid fa-arrow-right text-xs"></i>
+                </button>
+            </form>
+
+            <div class="mt-6 text-center">
+                <p class="text-xs text-slate-400">Demo Credentials: <span class="font-semibold text-amber-400">admin</span> / <span class="font-semibold text-amber-400">1234</span></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main App Container -->
+    <div id="appContainer" class="h-full flex flex-col md:flex-row hidden overflow-hidden">
+        
+        <!-- Sidebar Navigation -->
+        <aside id="sidebar" class="w-full md:w-64 bg-slate-900 border-r border-slate-800 flex flex-col z-20 transition-all duration-300">
+            <div class="p-5 flex items-center justify-between border-b border-slate-800">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-600 to-amber-400 text-slate-950 flex items-center justify-center font-bold shadow-md shadow-amber-600/20">
+                        <i class="fa-solid fa-crown"></i>
+                    </div>
+                    <div>
+                        <h2 class="font-bold text-white text-sm">Khandeshi Luxury</h2>
+                        <span class="text-[10px] uppercase tracking-wider text-amber-500 font-semibold">Hotel Suite</span>
+                    </div>
+                </div>
+                <button onclick="toggleMobileSidebar()" class="md:hidden text-slate-400 hover:text-white">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <nav class="flex-1 px-4 py-6 space-y-1.5 overflow-y-auto">
+                <button onclick="switchSection('dashboard')" id="nav-dashboard" class="nav-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium text-amber-400 bg-amber-500/10 transition">
+                    <i class="fa-solid fa-house w-5 text-center"></i>
+                    <span>Dashboard</span>
+                </button>
+                <button onclick="switchSection('rooms')" id="nav-rooms" class="nav-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">
+                    <i class="fa-solid fa-bed w-5 text-center"></i>
+                    <span>Rooms</span>
+                </button>
+                <button onclick="switchSection('guests')" id="nav-guests" class="nav-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">
+                    <i class="fa-solid fa-user-group w-5 text-center"></i>
+                    <span>Guests</span>
+                </button>
+                <button onclick="switchSection('bookings')" id="nav-bookings" class="nav-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">
+                    <i class="fa-solid fa-calendar-days w-5 text-center"></i>
+                    <span>Bookings</span>
+                </button>
+                <button onclick="switchSection('billing')" id="nav-billing" class="nav-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">
+                    <i class="fa-solid fa-file-invoice-dollar w-5 text-center"></i>
+                    <span>Billing</span>
+                </button>
+                <button onclick="switchSection('checkout')" id="nav-checkout" class="nav-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">
+                    <i class="fa-solid fa-right-from-bracket w-5 text-center"></i>
+                    <span>Check-out</span>
+                </button>
+            </nav>
+
+            <div class="p-4 border-t border-slate-800 space-y-3">
+                <button onclick="toggleTheme()" class="w-full flex items-center justify-between px-4 py-2.5 bg-slate-800 rounded-xl text-xs font-semibold text-slate-300 hover:bg-slate-700 transition">
+                    <span class="flex items-center space-x-2">
+                        <i id="themeIcon" class="fa-solid fa-sun"></i>
+                        <span id="themeText">Light Mode</span>
+                    </span>
+                    <div class="w-8 h-4 bg-amber-600 rounded-full relative transition">
+                        <div id="themeDot" class="w-3 h-3 bg-white rounded-full absolute top-0.5 left-4.5 transition-all"></div>
+                    </div>
+                </button>
+                <button onclick="handleLogout()" class="w-full flex items-center space-x-3 px-4 py-2.5 rounded-xl text-sm font-medium text-rose-500 hover:bg-rose-500/10 transition">
+                    <i class="fa-solid fa-power-off w-5 text-center"></i>
+                    <span>Log Out</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Workspace -->
+        <main class="flex-1 flex flex-col h-full overflow-hidden">
+            <header class="bg-slate-900 border-b border-slate-800 h-16 px-6 flex items-center justify-between shrink-0">
+                <div class="flex items-center space-x-3">
+                    <button onclick="toggleMobileSidebar()" class="md:hidden text-slate-400 hover:text-white focus:outline-none">
+                        <i class="fa-solid fa-bars text-xl"></i>
+                    </button>
+                    <h1 id="sectionTitle" class="text-lg font-bold text-white">Dashboard</h1>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <div class="flex items-center space-x-2 text-xs font-semibold text-slate-300 bg-slate-800 px-3 py-1.5 rounded-full border border-slate-700">
+                        <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
+                        <span>Admin Connected</span>
+                    </div>
+                </div>
+            </header>
+
+            <div class="flex-1 overflow-y-auto p-4 sm:p-8">
+
+                <!-- Dashboard Section -->
+                <section id="section-dashboard" class="content-section space-y-6 fade-in">
+                    <div class="bg-gradient-to-r from-amber-700 via-amber-600 to-amber-800 rounded-3xl p-6 sm:p-8 text-slate-950 shadow-xl relative overflow-hidden">
+                        <div class="absolute -right-10 -bottom-10 opacity-10 text-9xl">
+                            <i class="fa-solid fa-hotel"></i>
+                        </div>
+                        <div class="relative z-10 max-w-2xl">
+                            <span class="px-3 py-1 bg-slate-950/20 rounded-full text-xs font-bold uppercase tracking-wider text-slate-950 backdrop-blur-sm">Luxury Management Suite</span>
+                            <h2 class="text-2xl sm:text-3xl font-bold mt-3 text-slate-950">Welcome to Khandeshi Luxury Hotel Management System</h2>
+                            <p class="text-slate-900 text-sm font-medium mt-2 leading-relaxed">Oversee premium rooms, active guests, real-time bookings, bills, and checkouts efficiently.</p>
+                            <div class="mt-6 flex flex-wrap gap-3">
+                                <button onclick="switchSection('bookings')" class="px-5 py-2.5 bg-slate-950 text-amber-400 hover:bg-slate-900 font-semibold text-xs rounded-xl shadow-md transition flex items-center space-x-2">
+                                    <i class="fa-solid fa-plus"></i>
+                                    <span>New Reservation</span>
+                                </button>
+                                <button onclick="switchSection('rooms')" class="px-5 py-2.5 bg-slate-950/20 hover:bg-slate-950/30 text-slate-950 font-bold text-xs rounded-xl backdrop-blur-sm transition flex items-center space-x-2">
+                                    <i class="fa-solid fa-bed"></i>
+                                    <span>Explore Rooms</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+                        <div class="bg-slate-900 p-5 rounded-2xl border border-slate-800 shadow-sm flex items-center space-x-4">
+                            <div class="w-12 h-12 rounded-xl bg-blue-500/10 text-blue-400 flex items-center justify-center text-xl shrink-0">
+                                <i class="fa-solid fa-door-open"></i>
+                            </div>
+                            <div>
+                                <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Total Rooms</p>
+                                <h3 id="statTotalRooms" class="text-2xl font-bold text-white mt-0.5">0</h3>
+                            </div>
+                        </div>
+                        <div class="bg-slate-900 p-5 rounded-2xl border border-slate-800 shadow-sm flex items-center space-x-4">
+                            <div class="w-12 h-12 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-xl shrink-0">
+                                <i class="fa-solid fa-circle-check"></i>
+                            </div>
+                            <div>
+                                <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Available</p>
+                                <h3 id="statAvailableRooms" class="text-2xl font-bold text-white mt-0.5">0</h3>
+                            </div>
+                        </div>
+                        <div class="bg-slate-900 p-5 rounded-2xl border border-slate-800 shadow-sm flex items-center space-x-4">
+                            <div class="w-12 h-12 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center text-xl shrink-0">
+                                <i class="fa-solid fa-user-lock"></i>
+                            </div>
+                            <div>
+                                <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Occupied</p>
+                                <h3 id="statOccupiedRooms" class="text-2xl font-bold text-white mt-0.5">0</h3>
+                            </div>
+                        </div>
+                        <div class="bg-slate-900 p-5 rounded-2xl border border-slate-800 shadow-sm flex items-center space-x-4">
+                            <div class="w-12 h-12 rounded-xl bg-purple-500/10 text-purple-400 flex items-center justify-center text-xl shrink-0">
+                                <i class="fa-solid fa-users"></i>
+                            </div>
+                            <div>
+                                <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Total Guests</p>
+                                <h3 id="statTotalGuests" class="text-2xl font-bold text-white mt-0.5">0</h3>
+                            </div>
+                        </div>
+                        <div class="bg-slate-900 p-5 rounded-2xl border border-slate-800 shadow-sm flex items-center space-x-4 sm:col-span-2 lg:col-span-1">
+                            <div class="w-12 h-12 rounded-xl bg-rose-500/10 text-rose-400 flex items-center justify-center text-xl shrink-0">
+                                <i class="fa-solid fa-bookmark"></i>
+                            </div>
+                            <div>
+                                <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Bookings</p>
+                                <h3 id="statTotalBookings" class="text-2xl font-bold text-white mt-0.5">0</h3>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-900 rounded-2xl border border-slate-800 p-6 shadow-sm">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="font-bold text-white text-base">Recent Active Bookings</h3>
+                            <button onclick="switchSection('bookings')" class="text-xs font-semibold text-amber-400 hover:underline">View All</button>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse">
+                                <thead>
+                                    <tr class="border-b border-slate-800 text-xs font-semibold uppercase tracking-wider text-slate-400">
+                                        <th class="py-3 px-4">Guest Name</th>
+                                        <th class="py-3 px-4">Phone</th>
+                                        <th class="py-3 px-4">Room No.</th>
+                                        <th class="py-3 px-4">Check-in</th>
+                                        <th class="py-3 px-4">Check-out</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="dashboardRecentBookings" class="text-sm divide-y divide-slate-800/60"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Rooms Section -->
+                <section id="section-rooms" class="content-section space-y-6 hidden fade-in">
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                        <div>
+                            <h2 class="text-xl font-bold text-white">Room Management</h2>
+                            <p class="text-xs text-slate-400 mt-0.5">Manage luxury suites, pricing, and occupancy status.</p>
+                        </div>
+                        <button onclick="openAddRoomModal()" class="px-4 py-2.5 bg-amber-600 hover:bg-amber-500 text-slate-950 font-bold text-xs rounded-xl shadow-md transition flex items-center justify-center space-x-2">
+                            <i class="fa-solid fa-plus"></i>
+                            <span>Add Room</span>
+                        </button>
+                    </div>
+
+                    <div class="flex flex-wrap gap-2">
+                        <button onclick="filterRooms('All')" id="roomFilter-All" class="room-filter px-4 py-1.5 rounded-full text-xs font-semibold bg-amber-600 text-slate-950 font-bold transition">All Rooms</button>
+                        <button onclick="filterRooms('Available')" id="roomFilter-Available" class="room-filter px-4 py-1.5 rounded-full text-xs font-semibold bg-slate-900 text-slate-300 border border-slate-800 hover:bg-slate-800 transition">Available</button>
+                        <button onclick="filterRooms('Occupied')" id="roomFilter-Occupied" class="room-filter px-4 py-1.5 rounded-full text-xs font-semibold bg-slate-900 text-slate-300 border border-slate-800 hover:bg-slate-800 transition">Occupied</button>
+                    </div>
+
+                    <div id="roomsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
+                </section>
+
+                <!-- Guests Section -->
+                <section id="section-guests" class="content-section space-y-6 hidden fade-in">
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                        <div>
+                            <h2 class="text-xl font-bold text-white">Guest Management</h2>
+                            <p class="text-xs text-slate-400 mt-0.5">Search, add, edit, and delete hotel guests.</p>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <div class="relative">
+                                <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-500">
+                                    <i class="fa-solid fa-magnifying-glass text-xs"></i>
+                                </span>
+                                <input type="text" id="guestSearchInput" oninput="searchGuests()" placeholder="Search guest name or room..." 
+                                    class="pl-10 pr-4 py-2 bg-slate-900 border border-slate-800 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-amber-500 text-white transition w-60">
+                            </div>
+                            <button onclick="openAddGuestModal()" class="px-4 py-2.5 bg-amber-600 hover:bg-amber-500 text-slate-950 font-bold text-xs rounded-xl shadow-md transition flex items-center space-x-2 shrink-0">
+                                <i class="fa-solid fa-user-plus"></i>
+                                <span>Add Guest</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-900 rounded-2xl border border-slate-800 overflow-hidden shadow-sm">
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse">
+                                <thead>
+                                    <tr class="bg-slate-950/50 border-b border-slate-800 text-xs font-semibold uppercase tracking-wider text-slate-400">
+                                        <th class="py-3.5 px-4">Guest ID</th>
+                                        <th class="py-3.5 px-4">Guest Name</th>
+                                        <th class="py-3.5 px-4">Phone Number</th>
+                                        <th class="py-3.5 px-4">Room No.</th>
+                                        <th class="py-3.5 px-4">Check-in Date</th>
+                                        <th class="py-3.5 px-4">Check-out Date</th>
+                                        <th class="py-3.5 px-4 text-right">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="guestsTableBody" class="text-sm divide-y divide-slate-800/60"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Bookings Section -->
+                <section id="section-bookings" class="content-section space-y-6 hidden fade-in">
+                    <div>
+                        <h2 class="text-xl font-bold text-white">New Room Booking</h2>
+                        <p class="text-xs text-slate-400 mt-0.5">Fill in booking details to reserve an available luxury room.</p>
+                    </div>
+
+                    <div class="bg-slate-900 rounded-3xl border border-slate-800 p-6 sm:p-8 shadow-sm max-w-2xl">
+                        <form id="bookingForm" onsubmit="handleBookingSubmit(event)" class="space-y-5">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                                <div>
+                                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Guest Name</label>
+                                    <input type="text" id="bookGuestName" required placeholder="e.g. Rajesh Patil" 
+                                        class="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 text-white transition">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Phone Number</label>
+                                    <input type="tel" id="bookPhone" required placeholder="e.g. +91 98765 43210" 
+                                        class="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 text-white transition">
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                                <div>
+                                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Select Available Room</label>
+                                    <select id="bookRoomSelect" required class="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 text-white transition"></select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Number of Guests</label>
+                                    <input type="number" id="bookNumGuests" min="1" max="6" value="1" required 
+                                        class="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 text-white transition">
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                                <div>
+                                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Check-in Date</label>
+                                    <input type="date" id="bookCheckIn" required 
+                                        class="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 text-white transition">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Check-out Date</label>
+                                    <input type="date" id="bookCheckOut" required 
+                                        class="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 text-white transition">
+                                </div>
+                            </div>
+
+                            <button type="submit" class="w-full py-3.5 bg-amber-600 hover:bg-amber-500 text-slate-950 font-bold rounded-xl shadow-lg shadow-amber-600/20 transition flex items-center justify-center space-x-2">
+                                <i class="fa-solid fa-check-circle"></i>
+                                <span>Confirm Booking & Occupy Room</span>
+                            </button>
+                        </form>
+                    </div>
+                </section>
+
+                <!-- Billing Section -->
+                <section id="section-billing" class="content-section space-y-6 hidden fade-in">
+                    <div>
+                        <h2 class="text-xl font-bold text-white">Bill Calculator & Invoice</h2>
+                        <p class="text-xs text-slate-400 mt-0.5">Calculate costs, apply service charges and discounts automatically.</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <div class="bg-slate-900 rounded-3xl border border-slate-800 p-6 sm:p-8 shadow-sm lg:col-span-2">
+                            <h3 class="font-bold text-white text-base mb-4">Billing Parameters</h3>
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Select Active Guest / Booking</label>
+                                    <select id="billBookingSelect" onchange="loadBookingBillDetails()" class="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 text-white transition">
+                                        <option value="">-- Choose Occupied Room / Guest --</option>
+                                    </select>
+                                </div>
+
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Room Price per Night ($)</label>
+                                        <input type="number" id="billRoomPrice" oninput="calculateBill()" placeholder="0.00" 
+                                            class="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 text-white transition">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Number of Nights</label>
+                                        <input type="number" id="billNights" oninput="calculateBill()" min="1" value="1" 
+                                            class="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 text-white transition">
+                                    </div>
+                                </div>
+
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Food / Service Charges ($)</label>
+                                        <input type="number" id="billServiceCharges" oninput="calculateBill()" min="0" value="0" 
+                                            class="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 text-white transition">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Discount ($)</label>
+                                        <input type="number" id="billDiscount" oninput="calculateBill()" min="0" value="0" 
+                                            class="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 text-white transition">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-slate-900 rounded-3xl border border-slate-800 p-6 sm:p-8 shadow-sm flex flex-col justify-between">
+                            <div>
+                                <h3 class="font-bold text-white text-base mb-4">Invoice Summary</h3>
+                                <div class="space-y-3 text-sm border-b border-slate-800 pb-4 mb-4">
+                                    <div class="flex justify-between text-slate-400">
+                                        <span>Room Cost:</span>
+                                        <span id="summaryRoomCost" class="font-medium text-white">$0.00</span>
+                                    </div>
+                                    <div class="flex justify-between text-slate-400">
+                                        <span>Service Charges:</span>
+                                        <span id="summaryService" class="font-medium text-white">$0.00</span>
+                                    </div>
+                                    <div class="flex justify-between text-slate-400">
+                                        <span>Discount:</span>
+                                        <span id="summaryDiscount" class="font-medium text-amber-400">-$0.00</span>
+                                    </div>
+                                </div>
+                                <div class="flex justify-between items-center mb-6">
+                                    <span class="font-bold text-white">Final Amount:</span>
+                                    <span id="summaryFinalAmount" class="text-2xl font-bold text-amber-500">$0.00</span>
+                                </div>
+                            </div>
+                            <button onclick="generateBillReceipt()" class="w-full py-3.5 bg-amber-600 hover:bg-amber-500 text-slate-950 font-bold rounded-xl shadow-lg shadow-amber-600/20 transition flex items-center justify-center space-x-2">
+                                <i class="fa-solid fa-receipt"></i>
+                                <span>Generate Bill</span>
+                            </button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Check-out Section -->
+                <section id="section-checkout" class="content-section space-y-6 hidden fade-in">
+                    <div>
+                        <h2 class="text-xl font-bold text-white">Guest Check-out</h2>
+                        <p class="text-xs text-slate-400 mt-0.5">Process guest departure and release room status back to available.</p>
+                    </div>
+
+                    <div class="bg-slate-900 rounded-3xl border border-slate-800 p-6 sm:p-8 shadow-sm max-w-xl">
+                        <div class="space-y-5">
+                            <div>
+                                <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Select Active Booking to Check-out</label>
+                                <select id="checkoutBookingSelect" onchange="loadCheckoutDetails()" class="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 text-white transition">
+                                    <option value="">-- Choose Booking --</option>
+                                </select>
+                            </div>
+
+                            <div id="checkoutDetailsBox" class="bg-slate-950 rounded-2xl p-5 border border-slate-800 hidden space-y-3">
+                                <div class="flex justify-between text-sm">
+                                    <span class="text-slate-400">Guest Name:</span>
+                                    <span id="coGuestName" class="font-bold text-white">-</span>
+                                </div>
+                                <div class="flex justify-between text-sm">
+                                    <span class="text-slate-400">Room Number:</span>
+                                    <span id="coRoomNo" class="font-bold text-white">-</span>
+                                </div>
+                                <div class="flex justify-between text-sm">
+                                    <span class="text-slate-400">Check-in Date:</span>
+                                    <span id="coCheckIn" class="font-medium text-slate-300">-</span>
+                                </div>
+                                <div class="flex justify-between text-sm">
+                                    <span class="text-slate-400">Check-out Date:</span>
+                                    <span id="coCheckOut" class="font-medium text-slate-300">-</span>
+                                </div>
+                                <div class="border-t border-slate-800 pt-3 flex justify-between items-center">
+                                    <span class="font-bold text-white">Estimated Total Bill:</span>
+                                    <span id="coTotalBill" class="text-lg font-bold text-amber-500">$0.00</span>
+                                </div>
+                            </div>
+
+                            <button onclick="processCheckout()" class="w-full py-3.5 bg-rose-600 hover:bg-rose-500 text-white font-bold rounded-xl shadow-lg shadow-rose-600/20 transition flex items-center justify-center space-x-2">
+                                <i class="fa-solid fa-right-from-bracket"></i>
+                                <span>Complete Check-out & Free Room</span>
+                            </button>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Modals -->
+    <div id="addRoomModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-slate-900 rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl border border-slate-800">
+            <div class="flex items-center justify-between mb-5">
+                <h3 class="text-lg font-bold text-white">Add New Room</h3>
+                <button onclick="closeAddRoomModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <form onsubmit="handleSaveNewRoom(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Room Number</label>
+                    <input type="text" id="newRoomNo" required placeholder="e.g. 105" class="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 text-white">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Room Type</label>
+                    <select id="newRoomType" class="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 text-white">
+                        <option value="Single">Single</option>
+                        <option value="Double">Double</option>
+                        <option value="Deluxe">Deluxe</option>
+                        <option value="Suite">Suite</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Price per Night ($)</label>
+                    <input type="number" id="newRoomPrice" required min="50" value="150" class="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 text-white">
+                </div>
+                <button type="submit" class="w-full py-3 bg-amber-600 hover:bg-amber-500 text-slate-950 font-bold rounded-xl shadow-md transition">Save Room</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="guestModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-slate-900 rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl border border-slate-800">
+            <div class="flex items-center justify-between mb-5">
+                <h3 id="guestModalTitle" class="text-lg font-bold text-white">Add Guest</h3>
+                <button onclick="closeGuestModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <form onsubmit="handleSaveGuest(event)" class="space-y-4">
+                <input type="hidden" id="editGuestOriginalId">
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Guest ID</label>
+                    <input type="text" id="guestModalId" required placeholder="e.g. G-1001" class="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 text-white">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Guest Name</label>
+                    <input type="text" id="guestModalName" required placeholder="e.g. Priya Sharma" class="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 text-white">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Phone Number</label>
+                    <input type="tel" id="guestModalPhone" required placeholder="e.g. +91 98765 43210" class="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 text-white">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Room No.</label>
+                        <input type="text" id="guestModalRoom" required placeholder="101" class="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 text-white">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Check-in</label>
+                        <input type="date" id="guestModalCheckIn" required class="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 text-white">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Check-out</label>
+                    <input type="date" id="guestModalCheckOut" required class="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 text-white">
+                </div>
+                <button type="submit" class="w-full py-3 bg-amber-600 hover:bg-amber-500 text-slate-950 font-bold rounded-xl shadow-md transition">Save Guest</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Application Logic Script -->
+    <script>
+        const defaultRooms = [
+            { number: "101", type: "Single", price: 120, status: "Available" },
+            { number: "102", type: "Double", price: 210, status: "Occupied" },
+            { number: "103", type: "Deluxe", price: 340, status: "Available" },
+            { number: "104", type: "Suite", price: 550, status: "Available" },
+            { number: "201", type: "Single", price: 130, status: "Available" },
+            { number: "202", type: "Double", price: 230, status: "Occupied" },
+            { number: "203", type: "Deluxe", price: 360, status: "Available" },
+            { number: "204", type: "Suite", price: 600, status: "Available" }
+        ];
+
+        const defaultGuests = [
+            { id: "G-101", name: "Vikrant Deshmukh", phone: "+91 98221 43210", room: "102", checkIn: "2026-10-01", checkOut: "2026-10-06" },
+            { id: "G-102", name: "Sunita Patil", phone: "+91 97654 32109", room: "202", checkIn: "2026-10-02", checkOut: "2026-10-07" }
+        ];
+
+        const defaultBookings = [
+            { id: "B-201", guestName: "Vikrant Deshmukh", phone: "+91 98221 43210", room: "102", checkIn: "2026-10-01", checkOut: "2026-10-06", guests: 2, totalAmount: 1100 },
+            { id: "B-202", guestName: "Sunita Patil", phone: "+91 97654 32109", room: "202", checkIn: "2026-10-02", checkOut: "2026-10-07", guests: 2, totalAmount: 1200 }
+        ];
+
+        let appState = {
+            isLoggedIn: false,
+            darkMode: true,
+            currentRoomFilter: 'All',
+            rooms: [],
+            guests: [],
+            bookings: []
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadFromLocalStorage();
+            checkLoginState();
+            initTheme();
+            renderAll();
+        });
+
+        function loadFromLocalStorage() {
+            const saved = localStorage.getItem('khandeshi_luxury_state');
+            if (saved) {
+                try {
+                    const parsed = JSON.parse(saved);
+                    appState.isLoggedIn = parsed.isLoggedIn || false;
+                    appState.darkMode = parsed.darkMode !== undefined ? parsed.darkMode : true;
+                    appState.rooms = parsed.rooms || defaultRooms;
+                    appState.guests = parsed.guests || defaultGuests;
+                    appState.bookings = parsed.bookings || defaultBookings;
+                } catch (e) {
+                    console.error("Error loading localStorage", e);
+                    loadDefaults();
+                }
+            } else {
+                loadDefaults();
+            }
+        }
+
+        function loadDefaults() {
+            appState.rooms = [...defaultRooms];
+            appState.guests = [...defaultGuests];
+            appState.bookings = [...defaultBookings];
+            saveToLocalStorage();
+        }
+
+        function saveToLocalStorage() {
+            localStorage.setItem('khandeshi_luxury_state', JSON.stringify({
+                isLoggedIn: appState.isLoggedIn,
+                darkMode: appState.darkMode,
+                rooms: appState.rooms,
+                guests: appState.guests,
+                bookings: appState.bookings
+            }));
+        }
+
+        function handleLogin(event) {
+            event.preventDefault();
+            const user = document.getElementById('loginUsername').value.trim();
+            const pass = document.getElementById('loginPassword').value.trim();
+            const err = document.getElementById('loginError');
+
+            if (user === 'admin' && pass === '1234') {
+                appState.isLoggedIn = true;
+                saveToLocalStorage();
+                err.classList.add('hidden');
+                checkLoginState();
+                showNotification("Welcome", "Logged in to Khandeshi Luxury Suite successfully!", "success");
+            } else {
+                err.textContent = "Invalid credentials. Use admin / 1234";
+                err.classList.remove('hidden');
+            }
+        }
+
+        function handleLogout() {
+            appState.isLoggedIn = false;
+            saveToLocalStorage();
+            checkLoginState();
+            showNotification("Logged Out", "Session ended successfully.", "info");
+        }
+
+        function checkLoginState() {
+            const loginPage = document.getElementById('loginPage');
+            const appContainer = document.getElementById('appContainer');
+
+            if (appState.isLoggedIn) {
+                loginPage.classList.add('hidden');
+                appContainer.classList.remove('hidden');
+                renderAll();
+            } else {
+                loginPage.classList.remove('hidden');
+                appContainer.classList.add('hidden');
+            }
+        }
+
+        function initTheme() {
+            const htmlEl = document.documentElement;
+            const icon = document.getElementById('themeIcon');
+            const text = document.getElementById('themeText');
+            const dot = document.getElementById('themeDot');
+
+            if (appState.darkMode) {
+                htmlEl.classList.add('dark');
+                if (icon) icon.className = "fa-solid fa-sun";
+                if (text) text.textContent = "Light Mode";
+                if (dot) dot.style.left = "18px";
+            } else {
+                htmlEl.classList.remove('dark');
+                if (icon) icon.className = "fa-solid fa-moon";
+                if (text) text.textContent = "Dark Mode";
+                if (dot) dot.style.left = "2px";
+            }
+        }
+
+        function toggleTheme() {
+            appState.darkMode = !appState.darkMode;
+            initTheme();
+            saveToLocalStorage();
+        }
+
+        function switchSection(sectionId) {
+            document.querySelectorAll('.content-section').forEach(sec => sec.classList.add('hidden'));
+            const target = document.getElementById(`section-${sectionId}`);
+            if (target) target.classList.remove('hidden');
+
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.className = "nav-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition";
+            });
+            const active = document.getElementById(`nav-${sectionId}`);
+            if (active) {
+                active.className = "nav-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium text-amber-400 bg-amber-500/10 transition";
+            }
+
+            const titles = {
+                dashboard: "Dashboard",
+                rooms: "Room Management",
+                guests: "Guest Management",
+                bookings: "Booking System",
+                billing: "Billing & Calculator",
+                checkout: "Guest Check-out"
+            };
+            const sectionTitleEl = document.getElementById('sectionTitle');
+            if (sectionTitleEl) {
+                sectionTitleEl.textContent = titles[sectionId] || "Dashboard";
+            }
+
+            const sidebarEl = document.getElementById('sidebar');
+            if (window.innerWidth < 768 && sidebarEl) {
+                sidebarEl.classList.add('hidden');
+            }
+
+            if (sectionId === 'bookings') populateBookingRoomDropdown();
+            if (sectionId === 'billing') populateBillingDropdown();
+            if (sectionId === 'checkout') populateCheckoutDropdown();
+        }
+
+        function toggleMobileSidebar() {
+            const sidebarEl = document.getElementById('sidebar');
+            if (sidebarEl) {
+                sidebarEl.classList.toggle('hidden');
+            }
+        }
+
+        function renderAll() {
+            renderDashboardStats();
+            renderRecentBookings();
+            renderRooms();
+            renderGuests(appState.guests);
+            populateBookingRoomDropdown();
+            populateBillingDropdown();
+            populateCheckoutDropdown();
+        }
+
+        function renderDashboardStats() {
+            document.getElementById('statTotalRooms').textContent = appState.rooms.length;
+            document.getElementById('statAvailableRooms').textContent = appState.rooms.filter(r => r.status === 'Available').length;
+            document.getElementById('statOccupiedRooms').textContent = appState.rooms.filter(r => r.status === 'Occupied').length;
+            document.getElementById('statTotalGuests').textContent = appState.guests.length;
+            document.getElementById('statTotalBookings').textContent = appState.bookings.length;
+        }
+
+        function renderRecentBookings() {
+            const tbody = document.getElementById('dashboardRecentBookings');
+            tbody.innerHTML = '';
+            if (appState.bookings.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="py-4 text-center text-slate-500 text-xs">No active bookings.</td></tr>`;
+                return;
+            }
+            appState.bookings.slice(-5).reverse().forEach(b => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-800/40 transition";
+                tr.innerHTML = `
+                    <td class="py-3 px-4 font-semibold text-white">${b.guestName}</td>
+                    <td class="py-3 px-4 text-slate-300">${b.phone}</td>
+                    <td class="py-3 px-4"><span class="px-2.5 py-1 bg-amber-500/10 text-amber-400 rounded-lg text-xs font-bold">Room ${b.room}</span></td>
+                    <td class="py-3 px-4 text-slate-300 text-xs">${b.checkIn}</td>
+                    <td class="py-3 px-4 text-slate-300 text-xs">${b.checkOut}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function filterRooms(status) {
+            appState.currentRoomFilter = status;
+            ['All', 'Available', 'Occupied'].forEach(s => {
+                const btn = document.getElementById(`roomFilter-${s}`);
+                if (s === status) {
+                    btn.className = "room-filter px-4 py-1.5 rounded-full text-xs font-semibold bg-amber-600 text-slate-950 font-bold transition";
+                } else {
+                    btn.className = "room-filter px-4 py-1.5 rounded-full text-xs font-semibold bg-slate-900 text-slate-300 border border-slate-800 hover:bg-slate-800 transition";
+                }
+            });
+            renderRooms();
+        }
+
+        function renderRooms() {
+            const grid = document.getElementById('roomsGrid');
+            grid.innerHTML = '';
+            let filtered = appState.rooms;
+            if (appState.currentRoomFilter !== 'All') {
+                filtered = appState.rooms.filter(r => r.status === appState.currentRoomFilter);
+            }
+            if (filtered.length === 0) {
+                grid.innerHTML = `<div class="col-span-full py-10 text-center text-slate-500 text-sm">No rooms found.</div>`;
+                return;
+            }
+            filtered.forEach(room => {
+                const isAvail = room.status === 'Available';
+                const card = document.createElement('div');
+                card.className = `bg-slate-900 rounded-2xl border ${isAvail ? 'border-emerald-500/30' : 'border-amber-500/30'} p-5 shadow-sm flex flex-col justify-between transition hover:shadow-md`;
+                card.innerHTML = `
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-base font-bold text-white">Room ${room.number}</span>
+                            <span class="px-2.5 py-1 rounded-full text-[11px] font-semibold ${isAvail ? 'bg-emerald-500/10 text-emerald-400' : 'bg-amber-500/10 text-amber-400'}">${room.status}</span>
+                        </div>
+                        <div class="space-y-1.5 text-xs text-slate-400 mb-5">
+                            <p>Type: <strong class="text-white">${room.type}</strong></p>
+                            <p>Price: <strong class="text-white">$${room.price}/night</strong></p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2 pt-3 border-t border-slate-800">
+                        <button onclick="toggleRoomStatus('${room.number}')" class="flex-1 py-2 px-3 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl transition">Change Status</button>
+                        <button onclick="deleteRoom('${room.number}')" class="p-2 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 rounded-xl transition"><i class="fa-solid fa-trash text-xs"></i></button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function openAddRoomModal() { document.getElementById('addRoomModal').classList.remove('hidden'); }
+        function closeAddRoomModal() { document.getElementById('addRoomModal').classList.add('hidden'); }
+
+        function handleSaveNewRoom(event) {
+            event.preventDefault();
+            const number = document.getElementById('newRoomNo').value.trim();
+            const type = document.getElementById('newRoomType').value;
+            const price = parseFloat(document.getElementById('newRoomPrice').value);
+
+            if (appState.rooms.some(r => r.number === number)) {
+                showNotification("Error", `Room ${number} already exists!`, "error");
+                return;
+            }
+            appState.rooms.push({ number, type, price, status: "Available" });
+            saveToLocalStorage();
+            closeAddRoomModal();
+            renderAll();
+            showNotification("Success", `Room ${number} added.`, "success");
+            event.target.reset();
+        }
+
+        function toggleRoomStatus(num) {
+            const r = appState.rooms.find(x => x.number === num);
+            if (r) {
+                r.status = r.status === 'Available' ? 'Occupied' : 'Available';
+                saveToLocalStorage();
+                renderAll();
+                showNotification("Updated", `Room ${num} status is now ${r.status}`, "info");
+            }
+        }
+
+        function deleteRoom(num) {
+            const r = appState.rooms.find(x => x.number === num);
+            if (r && r.status === 'Occupied') {
+                showNotification("Blocked", "Cannot delete an occupied room.", "error");
+                return;
+            }
+            appState.rooms = appState.rooms.filter(x => x.number !== num);
+            saveToLocalStorage();
+            renderAll();
+            showNotification("Deleted", `Room ${num} removed.`, "success");
+        }
+
+        function renderGuests(list) {
+            const tbody = document.getElementById('guestsTableBody');
+            tbody.innerHTML = '';
+            if (list.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" class="py-8 text-center text-slate-500 text-sm">No guests found.</td></tr>`;
+                return;
+            }
+            list.forEach(g => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-800/40 transition";
+                tr.innerHTML = `
+                    <td class="py-3.5 px-4 font-semibold text-white text-xs">${g.id}</td>
+                    <td class="py-3.5 px-4 font-medium text-white">${g.name}</td>
+                    <td class="py-3.5 px-4 text-slate-300 text-xs">${g.phone}</td>
+                    <td class="py-3.5 px-4"><span class="px-2.5 py-1 bg-amber-500/10 text-amber-400 rounded-lg text-xs font-bold">Room ${g.room}</span></td>
+                    <td class="py-3.5 px-4 text-slate-300 text-xs">${g.checkIn}</td>
+                    <td class="py-3.5 px-4 text-slate-300 text-xs">${g.checkOut}</td>
+                    <td class="py-3.5 px-4 text-right space-x-2">
+                        <button onclick="openEditGuestModal('${g.id}')" class="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg text-xs font-semibold transition"><i class="fa-solid fa-pen"></i></button>
+                        <button onclick="deleteGuest('${g.id}')" class="px-2.5 py-1.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 rounded-lg text-xs font-semibold transition"><i class="fa-solid fa-trash"></i></button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function searchGuests() {
+            const q = document.getElementById('guestSearchInput').value.toLowerCase();
+            const filtered = appState.guests.filter(g => g.name.toLowerCase().includes(q) || g.room.includes(q) || g.phone.includes(q));
+            renderGuests(filtered);
+        }
+
+        function openAddGuestModal() {
+            document.getElementById('guestModalTitle').textContent = "Add Guest";
+            document.getElementById('editGuestOriginalId').value = "";
+            document.getElementById('guestModalId').value = "G-" + Math.floor(100 + Math.random() * 900);
+            document.getElementById('guestModalName').value = "";
+            document.getElementById('guestModalPhone').value = "";
+            document.getElementById('guestModalRoom').value = "";
+            document.getElementById('guestModalCheckIn').value = new Date().toISOString().split('T')[0];
+            document.getElementById('guestModalCheckOut').value = new Date(Date.now() + 86400000 * 3).toISOString().split('T')[0];
+            document.getElementById('guestModal').classList.remove('hidden');
+        }
+
+        function openEditGuestModal(id) {
+            const g = appState.guests.find(x => x.id === id);
+            if (!g) return;
+            document.getElementById('guestModalTitle').textContent = "Edit Guest";
+            document.getElementById('editGuestOriginalId').value = g.id;
+            document.getElementById('guestModalId').value = g.id;
+            document.getElementById('guestModalName').value = g.name;
+            document.getElementById('guestModalPhone').value = g.phone;
+            document.getElementById('guestModalRoom').value = g.room;
+            document.getElementById('guestModalCheckIn').value = g.checkIn;
+            document.getElementById('guestModalCheckOut').value = g.checkOut;
+            document.getElementById('guestModal').classList.remove('hidden');
+        }
+
+        function closeGuestModal() { document.getElementById('guestModal').classList.add('hidden'); }
+
+        function handleSaveGuest(event) {
+            event.preventDefault();
+            const orig = document.getElementById('editGuestOriginalId').value;
+            const id = document.getElementById('guestModalId').value.trim();
+            const name = document.getElementById('guestModalName').value.trim();
+            const phone = document.getElementById('guestModalPhone').value.trim();
+            const room = document.getElementById('guestModalRoom').value.trim();
+            const checkIn = document.getElementById('guestModalCheckIn').value;
+            const checkOut = document.getElementById('guestModalCheckOut').value;
+
+            if (orig) {
+                appState.guests = appState.guests.map(g => g.id === orig ? { id, name, phone, room, checkIn, checkOut } : g);
+                showNotification("Updated", "Guest details updated.", "success");
+            } else {
+                appState.guests.push({ id, name, phone, room, checkIn, checkOut });
+                showNotification("Added", "New guest added.", "success");
+            }
+            saveToLocalStorage();
+            closeGuestModal();
+            renderAll();
+        }
+
+        function deleteGuest(id) {
+            appState.guests = appState.guests.filter(g => g.id !== id);
+            saveToLocalStorage();
+            renderAll();
+            showNotification("Deleted", "Guest removed.", "success");
+        }
+
+        function populateBookingRoomDropdown() {
+            const select = document.getElementById('bookRoomSelect');
+            select.innerHTML = '';
+            const avail = appState.rooms.filter(r => r.status === 'Available');
+            if (avail.length === 0) {
+                select.innerHTML = `<option value="">No rooms available</option>`;
+                return;
+            }
+            avail.forEach(r => {
+                const opt = document.createElement('option');
+                opt.value = r.number;
+                opt.textContent = `Room ${r.number} (${r.type} - $${r.price}/night)`;
+                select.appendChild(opt);
+            });
+            document.getElementById('bookCheckIn').value = new Date().toISOString().split('T')[0];
+            document.getElementById('bookCheckOut').value = new Date(Date.now() + 86400000 * 3).toISOString().split('T')[0];
+        }
+
+        function handleBookingSubmit(event) {
+            event.preventDefault();
+            const guestName = document.getElementById('bookGuestName').value.trim();
+            const phone = document.getElementById('bookPhone').value.trim();
+            const roomNo = document.getElementById('bookRoomSelect').value;
+            const numGuests = parseInt(document.getElementById('bookNumGuests').value);
+            const checkIn = document.getElementById('bookCheckIn').value;
+            const checkOut = document.getElementById('bookCheckOut').value;
+
+            if (!roomNo) {
+                showNotification("Error", "Please select a room.", "error");
+                return;
+            }
+
+            const roomObj = appState.rooms.find(r => r.number === roomNo);
+            const nights = Math.max(1, Math.ceil((new Date(checkOut) - new Date(checkIn)) / (1000 * 60 * 60 * 24)));
+            const totalAmount = roomObj ? roomObj.price * nights : 300;
+
+            const bId = "B-" + Math.floor(1000 + Math.random() * 9000);
+            const gId = "G-" + Math.floor(1000 + Math.random() * 9000);
+
+            appState.bookings.push({ id: bId, guestName, phone, room: roomNo, checkIn, checkOut, guests: numGuests, totalAmount });
+            appState.guests.push({ id: gId, name: guestName, phone, room: roomNo, checkIn, checkOut });
+
+            if (roomObj) roomObj.status = "Occupied";
+
+            saveToLocalStorage();
+            renderAll();
+            switchSection('dashboard');
+            showNotification("Booking Confirmed", `Room ${roomNo} assigned to ${guestName}.`, "success");
+            event.target.reset();
+        }
+
+        function populateBillingDropdown() {
+            const select = document.getElementById('billBookingSelect');
+            select.innerHTML = `<option value="">-- Choose Occupied Room / Guest --</option>`;
+            appState.bookings.forEach(b => {
+                const opt = document.createElement('option');
+                opt.value = b.id;
+                opt.textContent = `${b.guestName} (Room ${b.room})`;
+                select.appendChild(opt);
+            });
+        }
+
+        function loadBookingBillDetails() {
+            const bId = document.getElementById('billBookingSelect').value;
+            if (!bId) {
+                document.getElementById('billRoomPrice').value = "";
+                document.getElementById('billNights').value = 1;
+                document.getElementById('billServiceCharges').value = 0;
+                document.getElementById('billDiscount').value = 0;
+                calculateBill();
+                return;
+            }
+            const booking = appState.bookings.find(b => b.id === bId);
+            if (booking) {
+                const room = appState.rooms.find(r => r.number === booking.room);
+                const price = room ? room.price : 150;
+                const nights = Math.max(1, Math.ceil((new Date(booking.checkOut) - new Date(booking.checkIn)) / (1000 * 60 * 60 * 24)));
+                document.getElementById('billRoomPrice').value = price;
+                document.getElementById('billNights').value = nights;
+                document.getElementById('billServiceCharges').value = 50;
+                document.getElementById('billDiscount').value = 20;
+                calculateBill();
+            }
+        }
+
+        function calculateBill() {
+            const price = parseFloat(document.getElementById('billRoomPrice').value) || 0;
+            const nights = parseInt(document.getElementById('billNights').value) || 1;
+            const service = parseFloat(document.getElementById('billServiceCharges').value) || 0;
+            const discount = parseFloat(document.getElementById('billDiscount').value) || 0;
+
+            const roomCost = price * nights;
+            const finalAmount = Math.max(0, roomCost + service - discount);
+
+            document.getElementById('summaryRoomCost').textContent = `$${roomCost.toFixed(2)}`;
+            document.getElementById('summaryService').textContent = `$${service.toFixed(2)}`;
+            document.getElementById('summaryDiscount').textContent = `-$${discount.toFixed(2)}`;
+            document.getElementById('summaryFinalAmount').textContent = `$${finalAmount.toFixed(2)}`;
+        }
+
+        function generateBillReceipt() {
+            const bId = document.getElementById('billBookingSelect').value;
+            if (!bId) {
+                showNotification("Error", "Please select a booking.", "error");
+                return;
+            }
+            const finalAmt = document.getElementById('summaryFinalAmount').textContent;
+            showNotification("Invoice Generated", `Total bill of ${finalAmt} successfully recorded.`, "success");
+        }
+
+        function populateCheckoutDropdown() {
+            const select = document.getElementById('checkoutBookingSelect');
+            select.innerHTML = `<option value="">-- Choose Booking --</option>`;
+            appState.bookings.forEach(b => {
+                const opt = document.createElement('option');
+                opt.value = b.id;
+                opt.textContent = `${b.guestName} - Room ${b.room}`;
+                select.appendChild(opt);
+            });
+            document.getElementById('checkoutDetailsBox').classList.add('hidden');
+        }
+
+        function loadCheckoutDetails() {
+            const bId = document.getElementById('checkoutBookingSelect').value;
+            const box = document.getElementById('checkoutDetailsBox');
+            if (!bId) {
+                box.classList.add('hidden');
+                return;
+            }
+            const booking = appState.bookings.find(b => b.id === bId);
+            if (booking) {
+                document.getElementById('coGuestName').textContent = booking.guestName;
+                document.getElementById('coRoomNo').textContent = `Room ${booking.room}`;
+                document.getElementById('coCheckIn').textContent = booking.checkIn;
+                document.getElementById('coCheckOut').textContent = booking.checkOut;
+                document.getElementById('coTotalBill').textContent = `$${(booking.totalAmount || 300).toFixed(2)}`;
+                box.classList.remove('hidden');
+            }
+        }
+
+        function processCheckout() {
+            const bId = document.getElementById('checkoutBookingSelect').value;
+            if (!bId) {
+                showNotification("Error", "Select a booking to checkout.", "error");
+                return;
+            }
+            const booking = appState.bookings.find(b => b.id === bId);
+            if (booking) {
+                const room = appState.rooms.find(r => r.number === booking.room);
+                if (room) room.status = "Available";
+                appState.bookings = appState.bookings.filter(b => b.id !== bId);
+                appState.guests = appState.guests.filter(g => g.room !== booking.room);
+                saveToLocalStorage();
+                renderAll();
+                showNotification("Checkout Complete", `Room ${booking.room} is now Available.`, "success");
+            }
+        }
+
+        function showNotification(title, message, type = 'success') {
+            const overlay = document.getElementById('modalOverlay');
+            const container = document.getElementById('modalContainer');
+            document.getElementById('modalTitle').textContent = title;
+            document.getElementById('modalMessage').textContent = message;
+
+            const wrap = document.getElementById('modalIconWrap');
+            const icon = document.getElementById('modalIcon');
+            if (type === 'success') {
+                wrap.className = "w-10 h-10 rounded-full flex items-center justify-center bg-amber-500/20 text-amber-500";
+                icon.className = "fa-solid fa-circle-check text-xl";
+            } else if (type === 'error') {
+                wrap.className = "w-10 h-10 rounded-full flex items-center justify-center bg-rose-500/20 text-rose-500";
+                icon.className = "fa-solid fa-circle-exclamation text-xl";
+            } else {
+                wrap.className = "w-10 h-10 rounded-full flex items-center justify-center bg-blue-500/20 text-blue-400";
+                icon.className = "fa-solid fa-circle-info text-xl";
+            }
+
+            overlay.classList.remove('hidden');
+            setTimeout(() => {
+                container.classList.remove('scale-95', 'opacity-0');
+                container.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        }
+
+        function closeModal() {
+            const overlay = document.getElementById('modalOverlay');
+            const container = document.getElementById('modalContainer');
+            container.classList.remove('scale-100', 'opacity-100');
+            container.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => overlay.classList.add('hidden'), 200);
+        }
+    </script>
+</body>
+</html>
